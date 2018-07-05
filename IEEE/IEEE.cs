@@ -7,6 +7,8 @@
     /// </summary>
     public static class IEEE
     {
+        #region Public
+
         /// <summary>
         /// Converts double to corresponding binary representation.
         /// </summary>
@@ -32,6 +34,10 @@
 
             return sign + absoluteValue;
         }
+
+        #endregion
+
+        #region Private
 
         /// <summary>
         /// Checks if the value is special value, 
@@ -84,6 +90,15 @@
             return true;
         }
 
+        /// <summary>
+        /// Calculates value exponent and mantiss.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         private static string ToNormalizedBinary(this double value)
         {
             int exponentDecimalBase = value.GetExponent();
@@ -98,7 +113,7 @@
         }
 
         /// <summary>
-        /// Calcilates the exponent by the ieee 754 rules.
+        /// Calculates the exponent by the ieee 754 rules.
         /// </summary>
         /// <param name="value">
         /// The value.
@@ -125,4 +140,6 @@
         /// </returns>
         private static bool IsNegative(this double value) => value < 0;
     }
+
+    #endregion
 }
