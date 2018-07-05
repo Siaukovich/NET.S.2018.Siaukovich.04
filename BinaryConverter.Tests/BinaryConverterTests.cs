@@ -13,7 +13,7 @@
         [TestCase(152, 10, ExpectedResult = "0010011000")]
         [TestCase(348743, 20, ExpectedResult = "01010101001001000111")]
         public string BinaryConverter_Ints_ValidResult(int value, int length) =>
-            BinaryConverter.ToBinaryString(value, length);
+            BinaryConverter.IntegerPartToBinaryString(value, length);
         
         [TestCase(3.125, 5, ExpectedResult = "11001")]
         [TestCase(1.125, 4, ExpectedResult = "1001")]
