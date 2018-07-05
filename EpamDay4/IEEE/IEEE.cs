@@ -1,6 +1,9 @@
 ﻿namespace IEEE
 {
     using System;
+    using System.Diagnostics.PerformanceData;
+    using System.Net.NetworkInformation;
+    using System.Text;
 
     public static class IEEE
     {
@@ -11,11 +14,13 @@
                 return result;
             }
 
-            string sign = value.IsNegative() ? "1" : "0";
+            char sign = value.IsNegative() ? '1' : '0';
 
-            string absoluteValue = value.ToNormalizedBinary();
+            (string exponent, string mantiss) absoluteValue = value.ToNormalizedBinary();
 
-            return sign + absoluteValue;
+            string answer = JoinPartsToString(sign, absoluteValue.exponent, absoluteValue.mantiss);
+
+            return answer;
         }
 
         private static bool IsSpecialValue(this double value, out string result)
@@ -55,22 +60,20 @@
             return true;
         }
 
-        private static string ToNormalizedBinary(this double value)
+        private static (string exponent, string mantiss) ToNormalizedBinary(this double value)
         {
             int exponentDecimalBase = value.GetExponent();
+            double mantissDecimalBase = value.GetMantiss();
 
-            const int EXPONENT_LENGTH = 11;
-            string exponentBinaryString = BinaryConverter.ToBinaryString(exponentDecimalBase, EXPONENT_LENGTH);
+            string exponentBinaryString = ExponentToBinaryString(exponentDecimalBase);
+            string mantissBinaryString = MantissToBinaryString(mantissDecimalBase);
 
-            const int MANTISS_LENGTH = 52;
-            string mantissBinaryString = BinaryConverter.ToBinaryString(value, MANTISS_LENGTH);
-
-            return string.Join(string.Empty, exponentBinaryString, mantissBinaryString);
+            return (exponentBinaryString, mantissBinaryString);
         }
 
         private static int GetExponent(this double value)
         {
-            const int SHIFT = 1023;
+            const int SHIFT = 1024;
             return (int)Math.Log(value, 2) + SHIFT;
         }
 
@@ -78,10 +81,45 @@
         {
             int integerPart = (int)value;
             double fractionalPart = value - integerPart;
+        }
 
-            
-            // TODO
-            return 0;
+        private static string ExponentToBinaryString(int value)
+        {
+            const int BASE = 2;
+            const int LENGTH = 11;
+            var binary = new char[LENGTH];
+            int i;
+            for (i = LENGTH - 1; i >= 0; i--)
+            {
+                binary[i] = (value % BASE).ToChar();
+                value >>= 1;
+
+                if (value == 0)
+                {
+                    break;
+                }
+            }
+
+            while (i >= 0)
+            {
+                binary[i] = '0';
+                i--;
+            }
+
+            return new string(binary);
+        }
+
+        private static string JoinPartsToString(char sign, string exponent, string mantiss)
+        {
+            string singStr = sign.ToString();
+
+            return string.Join(string.Empty, singStr, exponent, mantiss);
+        }
+
+        private static char ToChar(this int value)
+        {
+            const int OFFSET = 48;
+            return (char)(value + OFFSET);
         }
 
         /// Checks if value is negative.
