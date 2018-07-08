@@ -22,7 +22,7 @@
         /// </returns>
         public static string DoubleToStringBits(this double value)
         {
-            var union = new Union { doubleValue = value };
+            var union = new Union(value);
 
             return ToIeeeString(union);
         }
@@ -63,10 +63,16 @@
         private struct Union
         {
             [FieldOffset(0)]
-            public double doubleValue;
+            private readonly double doubleValue;
 
             [FieldOffset(0)]
-            public long longValue;
+            public readonly long longValue;
+
+            public Union(double dValue)
+            { 
+                this.longValue = 0;
+                this.doubleValue = dValue;
+            }
         }
 
         #endregion
